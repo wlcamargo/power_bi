@@ -1,0 +1,10 @@
+
+
+let
+    Fonte = (Parâmetro1) => let
+        Fonte = Csv.Document(Parâmetro1,[Delimiter=";", Columns=5, Encoding=1252, QuoteStyle=QuoteStyle.None]),
+        #"Cabeçalhos Promovidos" = Table.PromoteHeaders(Fonte, [PromoteAllScalars=true])
+    in
+        #"Cabeçalhos Promovidos"
+in
+    Fonte

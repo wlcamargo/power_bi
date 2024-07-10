@@ -1,0 +1,13 @@
+dCalendario = 
+ADDCOLUMNS(
+    CALENDARAUTO(),
+    "Ano", YEAR([Date]),
+    "Mes", MONTH([Date]),
+    "Nome do mes", FORMAT([Date], "mmmm"),
+    "Dia", DAY([Date]),
+    "Trimestre", ROUNDUP(MONTH([Date])/3,0),
+    "Nome do dia", FORMAT([Date], "dddd"),
+    "Mes-Ano", FORMAT([Date], "mmm-yyyy"),
+    "Class Mes-Ano", 100 * YEAR([Date]) + MONTH([Date]),
+    "Dia da semana", WEEKDAY([Date], 2)
+)

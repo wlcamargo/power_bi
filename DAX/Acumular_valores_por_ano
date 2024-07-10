@@ -1,0 +1,15 @@
+--Medida que acumula os resultados acumulados no contexto anual.
+
+
+ACC Vendas = 
+Var vMinimo =  STARTOFYEAR(dCalendario[Data])
+Var vMaximo =  max(dCalendario[Data])
+	Return
+   	 CALCULATE(
+        	[Venda],
+        	DATESBETWEEN(
+           	dCalendario[Data],
+            	vMinimo,
+            	vMaximo
+        	)
+   	 )

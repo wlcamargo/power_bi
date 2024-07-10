@@ -1,0 +1,50 @@
+Referência do vídeo (onde aprendi)
+Canal do planilheiros
+Link: https://www.youtube.com/watch?v=pm55kDWcwQY&t=270s
+
+
+-- Quantidade de Lojas que atingiram a meta
+
+QTD META ATINGIDA = 
+COUNTAX(
+    FILTER(
+        CALCULATETABLE(
+            SUMMARIZE(
+                dVendedor,
+                dVEndedor[NOME_VENDEDOR],
+                "ACIMA",
+                SUM(fVendas[VENDA]) && sum(fVendas[META])
+                )
+            ),
+                 [Total R$]>=[Meta R$]),
+                 dVendedor[NOME_VENDEDOR]                                
+)
+
+****************************************************************************
+-- Melhor Vendedor
+
+MELHOR VENDEDOR R$ = 
+MAXX(    
+    TOPN(1,
+        ADDCOLUMNS(
+            VALUES(fVendas[NOME_VENDEDOR]),
+                "MELHOR VENDEDOR",
+                    CALCULATE(SUM(fVendas[VENDA]))
+    ),
+        [MELHOR VENDEDOR],DESC
+),fVendas[NOME_VENDEDOR]
+)
+
+-------------------------------------------------------------
+-- Pior Vendedor
+
+PIOR VENDEDOR = 
+MAXX(
+    TOPN(1,
+    ADDCOLUMNS(
+        VALUES(fVendas[NOME_VENDEDOR]),
+        "PIOR",
+        CALCULATE(SUM(fVendas[VENDA]))
+    ),[PIOR],ASC),
+fVendas[NOME_VENDEDOR]
+)

@@ -1,0 +1,8 @@
+LY ACC VALOR:=
+CALCULATE(
+    SUM(Tabela[Coluna]),
+        DATESINPERIOD(
+            dCalendario[Data],
+            LASTDATE(dCalendario[Data]),
+            -12,MONTH)
+)

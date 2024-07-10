@@ -1,0 +1,10 @@
+TOP 5 ANUAL:=
+CALCULATE (
+  	 [METRICA],
+   		 KEEPFILTERS (
+      			  CALCULATETABLE (
+            				TOPN ( 5, ALL (TABELA[COLUNA]), [METRICA]),
+            					LASTNONBLANK (dCalendario[Ano], 0)
+ 			        )                
+       )
+ )

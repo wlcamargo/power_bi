@@ -1,0 +1,27 @@
+MELHOR_CLIENTE = 
+VAR vTabela_Agregada =
+SUMMARIZE(
+    DIM_NOMES,DIM_NOMES[NOME],
+    "VALOR_AGG",
+    SUM(FACT_VENDAS[VENDAS])
+)
+
+VAR vFiltro_Max_value =
+MAXX(
+    vTabela_Agregada,
+    [VALOR_AGG]
+)
+
+VAR vResult = 
+MAXX(
+    FILTER(
+        vTabela_Agregada,
+        [VALOR_AGG]=vFiltro_Max_value
+    ),
+    [NOME]
+)
+
+RETURN  
+vResult
+
+

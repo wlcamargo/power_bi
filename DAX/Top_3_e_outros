@@ -1,0 +1,92 @@
+--Criar Tabela Auxiliar com a coluna outros 
+--ProductNames Filtra dProdutos 1 para Muitos
+ProductNames = 
+UNION (
+    ALLNOBLANKROW(dProduto[PRODUTO]),
+    { "Others"}
+)
+------------------------------------------------------------------------
+--Ranking Considerando a linha outros
+Ranking = 
+VAR ProductsToRank = 3
+VAR Ranking =  
+    RANKX( 
+        ALLSELECTED(ProductNames[PRODUTO]),
+        [Vendas]
+    )
+VAR IsotherSelected = SELECTEDVALUE(ProductNames[PRODUTO]) = 
+"Others"
+VAR Result =
+    IF(
+        IsOtherSelected,
+        ProductsToRank + 1,
+        IF( Ranking <= ProductsToRank,Ranking,Ranking + 1)
+    )
+Return
+    Result
+------------------------------------------------------------------------------------------------    
+-- Medida com Top 3 e agrupamento de outros    
+Vendas Top 3 e Outros = 
+VAR SalesOfAll =
+    CALCULATE (
+        [Vendas],
+        REMOVEFILTERS ( ProductNames )
+    )
+RETURN
+    IF (
+        NOT ISINSCOPE ( ProductNames[PRODUTO] ),
+ 
+        -- Calculation for a group of products 
+        SalesOfAll,
+ 
+        -- Calculation for one product name
+        VAR ProductsToRank = 3
+        VAR SalesOfCurrentProduct = [Vendas]
+        VAR IsOtherSelected =
+            SELECTEDVALUE ( ProductNames[PRODUTO] ) = "Others"
+        RETURN
+            IF (
+                NOT IsOtherSelected,
+ 
+                -- Calculation for a regular product
+                SalesOfCurrentProduct,
+ 
+                -- Calculation for Others
+                VAR VisibleProducts =
+                    CALCULATETABLE (
+                        VALUES ( dProduto ),
+                        ALLSELECTED ( ProductNames[PRODUTO] )
+                    )
+                VAR ProductsWithSales =
+                    ADDCOLUMNS (
+                        VisibleProducts,
+                        "@SalesAmount", [Vendas]
+                    )
+                VAR SalesOfTopProducts =
+                    SUMX (
+                        TOPN (
+                            ProductsToRank,
+                            ProductsWithSales,
+                            [@SalesAmount]
+                        ),
+                        [@SalesAmount]
+                    )
+                VAR SalesOthers =
+                    SalesOfAll - SalesOfTopProducts
+                RETURN
+                    SalesOthers
+            )
+    )   
+--------------------------------------------------------------------------------------   
+--Linhas Visiveis para conferência ou filtro   
+Visible Row = 
+VAR Ranking = [Ranking]
+VAR TopNValue = 3
+VAR Result =
+    IF (
+        NOT ISBLANK ( Ranking ),
+        ( Ranking <= TopNValue ) - ( Ranking = TopNValue + 1 )
+    )
+RETURN
+    Result
+   

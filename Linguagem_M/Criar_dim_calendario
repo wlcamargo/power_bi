@@ -1,0 +1,26 @@
+
+
+let
+    DataMin = List.Min(fVendas[Data]),
+    DataMax = List.Max(fVendas[Data]),
+    AnoMin = Date.Year(DataMin),
+    AnoMax = Date.Year(DataMax),
+    DataInicial = #date(AnoMin, 1, 1),
+    DataFinal = #date(AnoMax, 12, 31),
+    Duracao = Duration.Days(DataFinal - DataInicial) + 1,
+    Fonte = List.Dates(DataInicial, Duracao, #duration(1, 0, 0, 0)),
+    #"Convertido para Tabela" = Table.FromList(Fonte, Splitter.SplitByNothing(), null, null, ExtraValues.Error),
+    #"Tipo Alterado" = Table.TransformColumnTypes(#"Convertido para Tabela",{{"Column1", type date}}),
+    #"Colunas Renomeadas" = Table.RenameColumns(#"Tipo Alterado",{{"Column1", "Data"}}),
+    #"Ano Inserido" = Table.AddColumn(#"Colunas Renomeadas", "Ano", each Date.Year([Data]), Int64.Type),
+    #"Mês Inserido" = Table.AddColumn(#"Ano Inserido", "Mês", each Date.Month([Data]), Int64.Type),
+    #"Nome do Mês Inserido" = Table.AddColumn(#"Mês Inserido", "Nome do Mês", each Date.MonthName([Data]), type text),
+    #"Trimestre Inserido" = Table.AddColumn(#"Nome do Mês Inserido", "Trimestre", each Date.QuarterOfYear([Data]), Int64.Type),
+    #"Dia Inserido" = Table.AddColumn(#"Trimestre Inserido", "Dia", each Date.Day([Data]), Int64.Type),
+    #"Dia da Semana Inserido" = Table.AddColumn(#"Dia Inserido", "Dia da Semana", each Date.DayOfWeek([Data]), Int64.Type),
+    #"Nome do Dia Inserido" = Table.AddColumn(#"Dia da Semana Inserido", "Nome do Dia", each Date.DayOfWeekName([Data]), type text),
+    #"Coluna Personalizada Adicionada" = Table.AddColumn(#"Nome do Dia Inserido", "Mes-Ano", each Text.Combine({Text.Start([Nome do Mês], 3), "-", Text.From([Ano], "pt-BR")}), type text),
+    #"Personalização Adicionada" = Table.AddColumn(#"Coluna Personalizada Adicionada", "Class Mes-Ano", each 100 * [Ano] + [Mês]),
+    #"Tipo Alterado1" = Table.TransformColumnTypes(#"Personalização Adicionada",{{"Class Mes-Ano", Int64.Type}})
+in
+    #"Tipo Alterado1"

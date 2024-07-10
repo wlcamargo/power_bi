@@ -1,0 +1,35 @@
+MoM Justa = 
+VAR vData_Maxima = CALCULATE(MAX(fVendas[DATAS]), REMOVEFILTERS()) 
+VAR vDia_Data_Maxima = DAY(vData_Maxima)
+VAR vMes_Data_Maxima = MONTH(vData_Maxima)
+VAR vAno_Data_Maxima = YEAR(vData_Maxima)
+
+VAR vData_Contexto = MAX(dCalendario[DATAS])
+VAR vDia_Contexto = DAY(vData_Contexto)
+VAR vMes_Contexto = MONTH(vData_Contexto)
+VAR vAno_Contexto = YEAR(vData_Contexto)
+
+VAR vResultado_Ultimo_Mes_Ajuste = 
+CALCULATE(
+    [VENDAS],
+    FILTER(
+        ALL(dCalendario[Datas]),
+        dCalendario[Datas] >= DATE(vAno_Contexto,vMes_Contexto-1,1)
+        && 
+        dCalendario[Datas] <= DATE(vAno_Contexto,vMes_Contexto-1,vDia_Data_Maxima)
+    )
+)
+VAR vResultado_Ultimo_Mes_Padrao =
+CALCULATE(
+    [VENDAS],
+    DATEADD(dCalendario[Datas],-1,MONTH)
+)
+
+VAR vTeste = 
+IF(
+    vMes_Contexto = vMes_Data_Maxima && vAno_Contexto = vAno_Data_Maxima && vDia_Data_Maxima = vDia_Contexto ,
+    vResultado_Ultimo_Mes_Ajuste,
+    vResultado_Ultimo_Mes_Padrao
+)
+RETURN
+vTeste

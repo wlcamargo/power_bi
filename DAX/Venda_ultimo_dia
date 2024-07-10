@@ -1,0 +1,17 @@
+Venda Ultimo Dia = 
+Var vMaior_Data = max(fVendas[DATA_VENDA])
+
+Var vMaiorMes = month(vMaior_Data)
+Var vMaiorAno = YEAR(vMaior_Data)
+Var vMaiorDia = day(vMaior_Data)
+
+Var vFiltro = 
+CALCULATE(
+    [VENDA],
+        FILTER(
+            dCalendario,
+            dCalendario[Data] = DATE(vMaiorAno,vMaiorMes,vMaiorDia)
+        )
+)
+Return
+vFiltro
